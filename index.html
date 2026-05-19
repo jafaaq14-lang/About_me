@@ -1,700 +1,433 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aaqil Jaffer | Systems & Software Architecture</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>Aaqil Jaffer | Interactive Portal</title>
     <style>
-        /* --- Core System Variables & Themes --- */
-        :root[data-theme="dark"] {
-            --bg-primary: #0F172A;
-            --bg-secondary: #1E293B;
-            --bg-terminal: #020617;
-            --border-color: #334155;
-            --accent-color: #10B981; /* Precision Emerald */
-            --accent-glow: rgba(16, 185, 129, 0.15);
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --terminal-user: #38BDF8;
+        /* --- PBS KIDS / LEAPFROG / CRAYOLA INSPIRED JAFFA-THEME --- */
+        :root {
+            --bg-play: #FFDF00;         /* Crayola Yellow */
+            --bg-card: #FFFFFF;         /* Crisp White */
+            --accent-green: #39B54A;    /* LeapFrog Green */
+            --accent-orange: #FF7900;   /* Vibrant Orange */
+            --accent-blue: #00AEEF;     /* PBS Kids Cyan */
+            --text-dark: #231F20;       /* Charcoal */
+            --border-thick: 5px solid #231F20;
         }
 
-        :root[data-theme="light"] {
-            --bg-primary: #F8FAFC;
-            --bg-secondary: #FFFFFF;
-            --bg-terminal: #0F172A;
-            --border-color: #E2E8F0;
-            --accent-color: #0070F3; /* Vercel Blue */
-            --accent-glow: rgba(0, 112, 243, 0.1);
-            --text-main: #0F172A;
-            --text-muted: #64748B;
-            --terminal-user: #38BDF8;
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(-1deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: var(--accent-orange); }
+            50% { border-color: var(--accent-blue); }
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, .mono {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-        }
-
-        /* --- Header / Branding --- */
-        header {
-            background-color: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            padding: 24px 40px;
-            position: sticky;
-            top: 0;
-            z-index: 90;
-            backdrop-filter: blur(8px);
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
+            background-color: var(--bg-play);
+            background-image: radial-gradient(var(--accent-orange) 15%, transparent 16%),
+                              radial-gradient(var(--accent-blue) 15%, transparent 16%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            color: var(--text-dark);
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Fredoka One', sans-serif;
+            margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-        }
-
-        .logo {
-            font-size: 1.75rem;
-            letter-spacing: -0.05em;
-            color: var(--text-main);
-            display: flex;
             align-items: center;
+        }
+
+        /* --- SOUND EFFECTS CONSOLE --- */
+        #audio-board {
+            background: #FF2D55;
+            border: var(--border-thick);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
             gap: 10px;
+            box-shadow: 6px 6px 0px #000;
         }
 
-        .logo span {
-            color: var(--accent-color);
+        .sound-btn {
+            background: white;
+            border: 3px solid #000;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
         }
 
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+        .sound-btn:active { transform: scale(0.9); }
 
-        /* --- Hero Section (System Terminal Mockup) --- */
-        .hero {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .terminal-container {
-            background-color: var(--bg-terminal);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        /* --- THE APP CONTAINER --- */
+        .app-container {
+            background-color: var(--bg-card);
+            border: var(--border-thick);
+            border-radius: 30px;
+            max-width: 850px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 12px 12px 0px #231F20;
+            box-sizing: border-box;
+            position: relative;
             overflow: hidden;
         }
 
-        .terminal-header {
-            background-color: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .terminal-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        .dot-red { background-color: #EF4444; }
-        .dot-yellow { background-color: #F59E0B; }
-        .dot-green { background-color: #10B981; }
-
-        .terminal-title {
-            color: #64748B;
-            font-size: 0.85rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .terminal-body {
-            padding: 24px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
-            color: #E2E8F0;
-            min-height: 280px;
-        }
-
-        .terminal-line {
-            margin-bottom: 10px;
-            white-space: pre-wrap;
-        }
-
-        .prompt-user { color: var(--terminal-user); }
-        .prompt-loc { color: var(--text-muted); }
-        .prompt-sign { color: var(--accent-color); }
-        
-        .output-success { color: #10B981; }
-        .output-info { color: #38BDF8; }
-
-        /* --- Interactive Categories --- */
-        .categories-nav {
-            max-width: 1200px;
-            margin: 40px auto 20px;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 16px;
-        }
-
-        .btn-console {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 18px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-size: 1rem;
-            font-weight: 500;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-
-        .btn-console:hover {
-            border-color: var(--accent-color);
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        .btn-console.active {
-            border-color: var(--accent-color);
-            background-color: var(--accent-glow);
-            box-shadow: inset 0 0 12px var(--accent-glow);
-        }
-
-        .btn-icon {
-            font-size: 1.25rem;
-        }
-
-        /* --- Content Layout --- */
-        .content-section {
-            max-width: 1200px;
-            margin: 0 auto 60px;
-            padding: 0 20px;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            opacity: 1;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 28px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .card-header-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-
-        .card h3 {
-            color: var(--text-main);
-            font-size: 1.2rem;
-        }
-
-        .card .tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-        }
-
-        .card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
-
-        .metric-list {
-            list-style: none;
-        }
-
-        .metric-item {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .metric-item::before {
-            content: "→";
-            color: var(--accent-color);
-        }
-
-        /* --- Fixed Floating Action Button --- */
-        #logic-toggle-btn {
-            position: fixed;
-            bottom: 32px;
-            right: 32px;
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 0 15px var(--accent-glow);
-        }
-
-        #logic-toggle-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* --- Footer --- */
-        footer {
-            background-color: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            padding: 40px 20px;
-            margin-top: 80px;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+        /* Top LeapFrog Style Banner */
+        .toy-banner {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
             text-align: center;
+            border: var(--border-thick);
+            margin-bottom: 30px;
+            animation: bounce 4s infinite ease-in-out;
         }
 
-        .footer-links {
+        .toy-banner h1 { margin: 0; font-size: 2.5rem; text-shadow: 3px 3px 0px #000; }
+        .toy-banner p { margin: 5px 0 0 0; font-weight: bold; font-size: 1.2rem; }
+
+        h2 {
+            color: white;
+            background-color: var(--accent-blue);
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 12px;
+            border: var(--border-thick);
+            transform: rotate(-1deg);
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        .grid-block {
+            background: #FFF;
+            border: 4px solid #231F20;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 6px 6px 0px #231F20;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .grid-block:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px #231F20;
+        }
+
+        /* --- FUN COURSE TABLE --- */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 5px;
+            margin-top: 15px;
+        }
+
+        th {
+            background-color: var(--accent-orange);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            border: 3px solid #231F20;
+            text-shadow: 1px 1px 0px #000;
+        }
+
+        td {
+            background-color: #FFFDE7;
+            padding: 12px;
+            border-radius: 10px;
+            border: 3px solid #231F20;
+            font-weight: bold;
+        }
+
+        /* --- CRAYOLA SKILL BADGES --- */
+        .badge-box {
             display: flex;
-            gap: 32px;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.95rem;
+        .badge {
+            padding: 8px 18px;
+            border-radius: 25px;
+            border: 3px solid #231F20;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 0px #000;
+            animation: wiggle 3s infinite ease-in-out;
+        }
+
+        .badge:nth-child(4n+1) { background-color: #FF2D55; animation-delay: 0.1s; }
+        .badge:nth-child(4n+2) { background-color: var(--accent-orange); animation-delay: 0.3s; }
+        .badge:nth-child(4n+3) { background-color: var(--accent-green); animation-delay: 0.5s; }
+        .badge:nth-child(4n+4) { background-color: var(--accent-blue); animation-delay: 0.7s; }
+
+        /* --- THE INTERACTIVE CONCURRENCY LAB --- */
+        #concurrency-box {
+            border: 5px dashed var(--accent-orange);
+            animation: pulse-border 2s infinite;
+        }
+
+        .control-panel {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .footer-links a:hover {
-            color: var(--accent-color);
-        }
-
-        .copyright {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        /* --- Responsive Viewport Modifications --- */
-        @media (max-width: 768px) {
-            header { padding: 20px; }
-            .categories-nav { grid-template-columns: 1fr; }
-            .grid-container { grid-template-columns: 1fr; }
-            #logic-toggle-btn { bottom: 20px; right: 20px; width: 48px; height: 48px; }
-        }
-
-        /* ==========================================================================
-           INJECTED CARTOON PHYSICS ANIMATIONS (KID-FRIENDLY ADDITIONS)
-           ========================================================================== */
-        
-        /* Persistent Soft Idle Float for Large Infrastructure Components */
-        @keyframes playfulFloat {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-6px) rotate(0.5deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        .logo, .terminal-container {
-            animation: playfulFloat 6s ease-in-out infinite;
-        }
-
-        /* High Elasticity Easing Loops for Interactive Hover States */
-        @keyframes elasticPop {
-            0% { transform: scale(1); }
-            30% { transform: scale(1.06) rotate(-0.5deg); }
-            60% { transform: scale(0.98) rotate(0.5deg); }
-            100% { transform: scale(1.03); }
-        }
-
-        /* Native class targeting via CSS guarantees live tracking on dynamically drawn elements */
-        .btn-console:hover, .card:hover, #logic-toggle-btn:hover, .footer-links a:hover {
-            animation: elasticPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+        .toy-btn {
+            background-color: var(--accent-orange);
+            color: white;
+            border: 3px solid #231F20;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 15px;
             cursor: pointer;
+            box-shadow: 4px 4px 0px #231F20;
+            font-family: inherit;
         }
 
-        /* Squash and Stretch Matrix for Forceful Structural Click Actions */
-        @keyframes squashStretch {
-            0% { transform: scale(1); }
-            35% { transform: scale(1.12, 0.82); }
-            65% { transform: scale(0.92, 1.06); }
-            100% { transform: scale(1, 1); }
+        .toy-btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px #231F20;
         }
 
-        .ani-click-squash {
-            animation: squashStretch 0.4s ease-out !important;
+        .printer-monitor {
+            background: #231F20;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 10px;
+            height: 120px;
+            overflow-y: auto;
+            border: 4px solid #94A3B8;
         }
 
-        /* Overlay Canvas System Architecture Boundary */
-        #animation-particle-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 9999;
+        /* --- FOOTER / LINKS --- */
+        .toy-links {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+
+        .toy-links a {
+            background: white;
+            border: 3px solid #231F20;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: var(--text-dark);
+            text-decoration: none;
+            box-shadow: 4px 4px 0px #231F20;
+        }
+
+        .toy-links a:hover {
+            background: var(--bg-play);
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
 
-    <canvas id="animation-particle-canvas"></canvas>
+    <div id="audio-board">
+        <span style="color:white; font-weight:bold; align-self:center; margin-right:5px;">🔊 TOY SOUNDS:</span>
+        <button class="sound-btn" onclick="playBeep(800, 'sine', 0.15)">Boop!</button>
+        <button class="sound-btn" onclick="playBeep(400, 'square', 0.2)">Zit!</button>
+        <button class="sound-btn" onclick="playBeep(1200, 'triangle', 0.25)">Ding!</button>
+    </div>
 
-    <header>
-        <div class="header-container">
-            <h1 class="logo">AAQIL JAFFER<span>.</span></h1>
-            <div class="subtitle">Systems Architecture // Cybersecurity Diagnostics // Software Engineering</div>
+    <div class="app-container">
+        
+        <div class="toy-banner" onclick="playBeep(587.33, 'sine', 0.4)">
+            <h1>Aaqil Jaffer's Tech Playground! 🚀</h1>
+            <p>Senior Computer Science Explorer • Metropolitan State University [cite: 22]</p>
         </div>
-    </header>
 
-    <main class="hero">
-        <div class="terminal-container">
-            <div class="terminal-header">
-                <div class="terminal-buttons">
-                    <div class="dot dot-red"></div>
-                    <div class="dot dot-yellow"></div>
-                    <div class="dot dot-green"></div>
-                </div>
-                <div class="terminal-title">core_engine_diagnostic.sh</div>
-                <div></div>
-            </div>
-            <div class="terminal-body" id="terminal-output">
-                <div class="terminal-line"><span class="prompt-user">visitor</span><span class="prompt-loc">@jaffer-node</span><span class="prompt-sign">:$</span> ./initialize_portfolio</div>
-                <div class="terminal-line output-info">[SYSTEM] Initializing neutral logical verification engine...</div>
-                <div class="terminal-line output-success">[SUCCESS] Environment loaded status: 100% integral.</div>
-                <div class="terminal-line">[METRICS] Host active: Metro State Core Network node.</div>
-                <div class="terminal-line"><span class="prompt-user">visitor</span><span class="prompt-loc">@jaffer-node</span><span class="prompt-sign">:$</span> <span id="typing-effect"></span></div>
+        <div class="grid-block">
+            <h2>Who Am I? 🕵️‍♂️</h2>
+            <p style="font-size: 1.1rem; font-weight: bold; color: #475569; margin-top: 15px;">
+                I went to **Normandale Community College** to pick up my Associate degree badge! Now, I am a senior at **Metro State** engineering awesome computer systems. I love tracking data validation, optimizing multi-threaded printer tracks, and configuring secure software architectures! [cite: 22]
+            </p>
+        </div>
+
+        <div class="grid-block">
+            <h2>My Super Class List! 🎒</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class Adventure [cite: 27]</th>
+                        <th>Cool Thing I Learned [cite: 27]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ICS 499 Capstone Project [cite: 1]</td>
+                        <td>Building single-page web engines! [cite: 6]</td>
+                    </tr>
+                    <tr>
+                        <td>Data Structures & Algorithms [cite: 26]</td>
+                        <td>How to sort data at lightning speed!</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Computing Architecture</td>
+                        <td>Deploying system blueprints straight to the clouds!</td>
+                    </tr>
+                    <tr>
+                        <td>Digital Logic Design</td>
+                        <td>Programming real hardware matrices with VHDL!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="grid-block">
+            <h2>My Technical Power-Ups! ⚡</h2>
+            <div class="badge-box">
+                <div class="badge">Java ☕</div>
+                <div class="badge">Python 🐍</div>
+                <div class="badge">JavaScript ⚡</div>
+                <div class="badge">SQL 🗄️</div>
+                <div class="badge">HTML5 🌐</div>
+                <div class="badge">CSS3 🎨</div>
+                <div class="badge">JavaFX 🖼️</div>
+                <div class="badge">AWS ☁️</div>
+                <div class="badge">Azure ☁️</div>
+                <div class="badge">GCP ☁️</div>
+                <div class="badge">CompTIA Cloud+ 🎖️</div>
+                <div class="badge">Wireshark 🦈</div>
+                <div class="badge">Nmap 🗺️</div>
+                <div class="badge">TryHackMe 🎮</div>
+                <div class="badge">Claude AI 🤖</div>
+                <div class="badge">ChatGPT 🤖</div>
+                <div class="badge">BlackBox AI ⬛</div>
             </div>
         </div>
-    </main>
 
-    <nav class="categories-nav">
-        <button class="btn-console active" onclick="showCategory('cloud')" id="btn-cloud">
-            <span class="btn-icon">🌐</span>
-            <span>Cloud & Software</span>
-        </button>
-        <button class="btn-console" onclick="showCategory('security')" id="btn-security">
-            <span class="btn-icon">🛡️</span>
-            <span>Cybersecurity</span>
-        </button>
-        <button class="btn-console" onclick="showCategory('hardware')" id="btn-hardware">
-            <span class="btn-icon">⚙️</span>
-            <span>Hardware Systems</span>
-        </button>
-        <button class="btn-console" onclick="showCategory('logic')" id="btn-logic">
-            <span class="btn-icon">🧠</span>
-            <span>Logical Frameworks</span>
-        </button>
-    </nav>
-
-    <section class="content-section">
-        <div class="grid-container" id="dynamic-grid-target">
+        <div class="grid-block" id="concurrency-box">
+            <h2>The Concurrency Printer Lab! 🖨️✨</h2>
+            <p><strong>Educational Objective:</strong> Stop the threads from causing a race condition! Hit the execution switches to fire off workers and watch if the output stays sorted or goes into absolute chaos!</p>
+            
+            <div class="control-panel">
+                <button class="toy-btn" style="background-color: var(--accent-orange);" onclick="runSimulation(false)">Fire Unsynced Chaos! 🔥</button>
+                <button class="toy-btn" style="background-color: var(--accent-green);" onclick="runSimulation(true)">Fire Synced Order! 🟢</button>
+                <button class="toy-btn" style="background-color: #64748B;" onclick="clearMonitor()">Reset Screen</button>
             </div>
-    </section>
 
-    <button id="logic-toggle-btn" onclick="toggleSystemTheme()" title="Toggle System Theme">🌓</button>
-
-    <footer>
-        <div class="footer-container">
-            <div class="footer-links">
-                <a href="https://github.com" target="_blank">
-                    <span>🗂️</span> GitHub Repository
-                </a>
-                <a href="#" onclick="alert('System Notice: Integration point active.'); return false;">
-                    <span>⚡</span> Vercel Status
-                </a>
-            </div>
-            <p class="copyright">© 2026 Aaqil Jaffer | Built with structural logic and deployed via Vercel.</p>
+            <div class="printer-monitor" id="monitor">Click a switch above to deploy thread workers...</div>
         </div>
-    </footer>
+
+        <div class="grid-block">
+            <h2>Cool Inventions I Worked On! 🛠️</h2>
+            
+            <div style="background: #FFF8E1; border: 3px dashed #FFB300; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+                <h3 style="margin:0; color: #FF6F00;">👾 FPGA Multi-Mode Gameplay Board</h3>
+                <p style="margin: 5px 0 0 0; font-weight: bold;">Built native hardware layouts using precise hardware description languages inside the Xilinx Artix-7 chip matrix!</p>
+                <p style="font-size: 0.9rem; margin: 5px 0 0 0;"><strong>Power Tools:</strong> VHDL, Vivado, XC7A100T Architecture</p>
+            </div>
+
+            <div style="background: #E8F5E9; border: 3px dashed #4CAF50; padding: 15px; border-radius: 15px;">
+                <h3 style="margin:0; color: #2E7D32;">🛡️ NIST 800-161 Threat Shield Case Study</h3>
+                <p style="margin: 5px 0 0 0; font-weight: bold;">Audited hardware boundary provenance and chiplet interconnect security lines to intercept sub-tier supply manipulations.</p>
+                <p style="font-size: 0.9rem; margin: 5px 0 0 0;"><strong>Power Tools:</strong> Cybersecurity Diagnostic Frameworks, Risk Assessments</p>
+            </div>
+        </div>
+
+        <div class="toy-links">
+            <a href="https://github.com/YourUsername" target="_blank" onclick="playBeep(880, 'sine', 0.1)">My GitHub Toolbox 🛠️ [cite: 42]</a>
+            <a href="https://linkedin.com/in/YourUsername" target="_blank" onclick="playBeep(987.77, 'sine', 0.1)">My Professional Base 🚀</a>
+        </div>
+
+    </div>
 
     <script>
-        // Content Data Repositories Matched to Technical Footprint
-        const categoryData = {
-            cloud: [
-                {
-                    title: "Cloud Ecosystem Engineering",
-                    tag: "Infrastructure",
-                    desc: "Architecting cloud-native solutions across disparate ecosystems ensuring scalability and low-latency access patterns.",
-                    metrics: ["AWS Deployment Architectures", "Azure Security Frameworks", "GCP Service Alignments"]
-                },
-                {
-                    title: "Object-Oriented Concurrency",
-                    tag: "Backend",
-                    desc: "Developing robust backend services managing multi-threaded computational streams and race condition mitigation.",
-                    metrics: ["Java Concurrency Engine Design", "Python Automation Protocols", "High-Throughput Rest APIs"]
-                },
-                {
-                    title: "Relational Modeling",
-                    tag: "Persistence",
-                    desc: "Structuring schema frameworks to assure transactional atomicity, strict consistency, and query optimization.",
-                    metrics: ["SQL Relational Architecture", "Query Optimization Vectors", "Schema Integrity Protocols"]
-                }
-            ],
-            security: [
-                {
-                    title: "Threat Landscape Assessment",
-                    tag: "Risk Diagnostics",
-                    desc: "Systematic auditing of target attack vectors to lower surface vulnerability and align with standard frameworks.",
-                    metrics: ["Active Risk Mitigation Modeling", "Vulnerability Surface Isolation", "NIST Compliance Reviews"]
-                },
-                {
-                    title: "Network Inspection Frameworks",
-                    tag: "Packet Analysis",
-                    desc: "Deep packet observation and data stream carving to identify malicious network behaviors or anomalies.",
-                    metrics: ["Wireshark Payload Deep Dives", "Packetbeat Log Telemetry", "Real-Time Traffic Parsing"]
-                },
-                {
-                    title: "Passive & Active Network Discovery",
-                    tag: "Auditing",
-                    desc: "Mapping internal network topologies and parsing response codes to diagnose structural vulnerabilities.",
-                    metrics: ["Nmap Port State Evaluation", "Kibana SIEM Analysis Layers", "Network Topology Mapping"]
-                }
-            ],
-            hardware: [
-                {
-                    title: "FPGA Architecture Engineering",
-                    tag: "VHDL Design",
-                    desc: "Synthesizing precise digital logical engines implemented explicitly via hardware description frameworks.",
-                    metrics: ["VHDL Structural Modeling", "XC7A100T Hardware Engineering", "Multi-Mode Gameplay Engines"]
-                },
-                {
-                    title: "Sub-Tier Supply Chain Audits",
-                    tag: "NIST SP 800-161",
-                    desc: "Evaluating multi-layered supplier networks to trace hardware provenance and intercept logical corruption.",
-                    metrics: ["Chain of Custody Verifications", "Sub-Tier Dependency Assessments", "Vulnerability Surface Indexing"]
-                },
-                {
-                    title: "Advanced Component Security",
-                    tag: "Hardware Trust",
-                    desc: "Evaluating potential exploitation vectors across specialized, high-density physical modular layouts.",
-                    metrics: ["2.5D Chiplet Boundary Analysis", "3D Interconnect Exploitation Checks", "Silicon Provenance Logic"]
-                }
-            ],
-            logic: [
-                {
-                    title: "Axiomatic Break Resolution",
-                    tag: "Münchhausen Trilemma",
-                    desc: "Isolating systemic logical structural loops through structural regression and absolute axiomatic bounds.",
-                    metrics: ["Infinite Regress Interception", "Circularity Diagnostic Models", "Dogmatic Axiomatic Definitions"]
-                },
-                {
-                    title: "Integritism Core Architecture",
-                    tag: "Systemic Truth",
-                    desc: "Modeling abstract processing systems on immutable logical frameworks to limit data divergence.",
-                    metrics: ["Data-to-Truth Synthesis Matrix", "Structural Logic Verifications", "Integritism Framework Mapping"]
-                },
-                {
-                    title: "Framework Auditing Engine",
-                    tag: "Metacognition",
-                    desc: "Deploying structural observation mechanisms to identify cognitive biases or systemic alignment faults.",
-                    metrics: ["Sensory Metaphor Conversion", "Cognitive Mechanics Isolations", "Dr. Kanojia Framework Mapping"]
-                }
-            ]
-        };
-
-        // UI View Updating State Engine
-        function showCategory(categoryKey) {
-            const gridTarget = document.getElementById('dynamic-grid-target');
-            
-            // Re-apply active class markers across navigation nodes
-            document.querySelectorAll('.btn-console').forEach(btn => btn.classList.remove('active'));
-            const selectedButton = document.getElementById(`btn-${categoryKey}`);
-            if (selectedButton) selectedButton.classList.add('active');
-
-            // Construct new dynamic node grid layout mapping the underlying array
-            const dataSet = categoryData[categoryKey] || [];
-            let generatedHtml = '';
-
-            dataSet.forEach(item => {
-                let metricsHtml = '';
-                item.metrics.forEach(metric => {
-                    metricsHtml += `<li class="metric-item">${metric}</li>`;
-                });
-
-                generatedHtml += `
-                    <div class="card" style="animation: fadeIn 0.4s ease forwards;">
-                        <div class="card-header-group">
-                            <h3>${item.title}</h3>
-                            <span class="tag">${item.tag}</span>
-                        </div>
-                        <p>${item.desc}</p>
-                        <ul class="metric-list">
-                            ${metricsHtml}
-                        </ul>
-                    </div>
-                `;
-            });
-
-            gridTarget.innerHTML = generatedHtml;
-            updateTerminalLog(categoryKey);
-        }
-
-        // Contextual Terminal Logging Engine
-        function updateTerminalLog(categoryKey) {
-            const textMap = {
-                cloud: "cat cloud_architecture_manifest.json --query modules",
-                security: "nmap -sV -T4 internal_audit_subnet.net && packetbeat -run",
-                hardware: "ghdl -a --std=08 fpga_xc7a100t_core.vhdl",
-                logic: "verify --system=integritism --resolution=trilemma"
-            };
-            
-            const targetString = textMap[categoryKey] || "";
-            const textContainer = document.getElementById('typing-effect');
-            if (textContainer) {
-                textContainer.textContent = targetString;
+        // Web Audio API Synth Engine
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
 
-        // Theme Switcher Logic Engine (Dark/Light Custom Property Swapping)
-        function toggleSystemTheme() {
-            const rootElement = document.documentElement;
-            const activeTheme = rootElement.getAttribute('data-theme');
-            const targetTheme = (activeTheme === 'dark') ? 'light' : 'dark';
-            rootElement.setAttribute('data-theme', targetTheme);
+        function playBeep(frequency, type, duration) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {
+                console.log("Audio contexts blocked or unsupported.");
+            }
         }
 
-        // DOM Domination Initialization Hook
-        document.addEventListener('DOMContentLoaded', () => {
-            showCategory('cloud');
+        // Logic Engine Concurrency Engine Simulator
+        const monitor = document.getElementById('monitor');
+        
+        function clearMonitor() {
+            monitor.innerHTML = "Screen cleared. Awaiting signals...";
+            playBeep(300, 'triangle', 0.1);
+        }
 
-            /* ==========================================================================
-               PARTICLE GENERATION & INTERACTION ENGINE EXTENSION
-               ========================================================================== */
-            const canvas = document.getElementById('animation-particle-canvas');
-            const ctx = canvas.getContext('2d');
+        function runSimulation(isSynced) {
+            monitor.innerHTML = "";
+            let outputs = [];
             
-            const resizeCanvas = () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            };
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
-
-            let particles = [];
-            // Vibrant palette matching system accents and high-visibility cartoon tones
-            const palette = ['#10B981', '#38BDF8', '#F59E0B', '#EF4444', '#EC4899', '#A855F7'];
-
-            class Particle {
-                constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
-                    this.size = Math.random() * 7 + 4;
-                    this.speedX = (Math.random() - 0.5) * 7;
-                    this.speedY = (Math.random() - 0.7) * 7 - 3; // Directional upward bias
-                    this.color = palette[Math.floor(Math.random() * palette.length)];
-                    this.gravity = 0.22;
-                    this.alpha = 1;
-                    this.decay = Math.random() * 0.02 + 0.015;
-                }
-                update() {
-                    this.speedY += this.gravity;
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    this.alpha -= this.decay;
-                }
-                draw() {
-                    ctx.save();
-                    ctx.globalAlpha = this.alpha;
-                    ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
+            if (isSynced) {
+                playBeep(600, 'sine', 0.15);
+                setTimeout(() => playBeep(800, 'sine', 0.15), 100);
+                
+                // Ordered, synchronized thread queue
+                outputs.push("[Thread-A] Accessing Shared Printer Memory Resource...");
+                outputs.push("[Thread-A] Writing Block Content: 'AAQIL'");
+                outputs.push("[Thread-A] Execution complete safely.");
+                outputs.push("[Thread-B] Accessing Shared Printer Memory Resource...");
+                outputs.push("[Thread-B] Writing Block Content: 'JAFFER'");
+                outputs.push("[Thread-B] Execution complete safely.");
+            } else {
+                playBeep(250, 'square', 0.3);
+                // Race condition interleaving chaos simulation
+                outputs.push("[Thread-A] Accessing Resource...");
+                outputs.push("💥 RACE CONDITION WARNING: [Thread-B] Intercepted memory line raw!");
+                outputs.push("[Thread-B] Writing Block Content: 'JAF'");
+                outputs.push("[Thread-A] Overwriting Core Pipeline Data: 'AAQIL'");
+                outputs.push("[Thread-B] Interleaved Tail Append: 'FER'");
+                outputs.push("⚠️ OUTPUT DATA CORRUPTED: 'JAF-AAQIL-FER'");
             }
 
-            function renderLoop() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles = particles.filter(p => p.alpha > 0);
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-                requestAnimationFrame(renderLoop);
-            }
-            renderLoop();
-
-            // Intercept interactions globally to handle original + dynamically swapped elements
-            const interactiveSelectors = '.btn-console, .card, #logic-toggle-btn, .footer-links a';
-            
-            document.body.addEventListener('click', (e) => {
-                const targetNode = e.target.closest(interactiveSelectors);
-                if (targetNode) {
-                    // Trigger physical squash animation pipeline
-                    targetNode.classList.remove('ani-click-squash');
-                    void targetNode.offsetWidth; // Force synchronization step
-                    targetNode.classList.add('ani-click-squash');
-
-                    // Instantiation loop for kinetic bursts
-                    for (let i = 0; i < 16; i++) {
-                        particles.push(new Particle(e.clientX, e.clientY));
-                    }
+            let idx = 0;
+            function printLine() {
+                if(idx < outputs.length) {
+                    monitor.innerHTML += outputs[idx] + "<br>";
+                    monitor.scrollTop = monitor.scrollHeight;
+                    idx++;
+                    setTimeout(printLine, 120);
                 }
-            });
-        });
+            }
+            printLine();
+        }
     </script>
 </body>
 </html>
