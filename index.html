@@ -31,6 +31,13 @@
             50% { border-color: var(--accent-blue); }
         }
 
+        /* Fun pop-up animation for instructional tooltips */
+        @keyframes popIn {
+            0% { transform: scale(0) translateY(10px); opacity: 0; }
+            80% { transform: scale(1.1) translateY(-2px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); }
+        }
+
         body {
             background-color: var(--bg-play);
             background-image: radial-gradient(var(--accent-orange) 15%, transparent 16%),
@@ -94,6 +101,8 @@
             border: var(--border-thick);
             margin-bottom: 30px;
             animation: bounce 4s infinite ease-in-out;
+            cursor: pointer;
+            position: relative;
         }
 
         .toy-banner h1 { margin: 0; font-size: 2.5rem; text-shadow: 3px 3px 0px #000; }
@@ -117,7 +126,8 @@
             padding: 20px;
             margin-bottom: 25px;
             box-shadow: 6px 6px 0px #231F20;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            position: relative;
         }
 
         .grid-block:hover {
@@ -142,12 +152,22 @@
             text-shadow: 1px 1px 0px #000;
         }
 
+        tr {
+            cursor: pointer;
+        }
+
         td {
             background-color: #FFFDE7;
             padding: 12px;
             border-radius: 10px;
             border: 3px solid #231F20;
             font-weight: bold;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        tr:hover td {
+            background-color: #FFF59D;
+            transform: scale(1.02);
         }
 
         /* --- CRAYOLA SKILL BADGES --- */
@@ -166,6 +186,13 @@
             color: white;
             text-shadow: 1px 1px 0px #000;
             animation: wiggle 3s infinite ease-in-out;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .badge:hover {
+            transform: scale(1.2) rotate(5deg) !important;
+            z-index: 10;
         }
 
         .badge:nth-child(4n+1) { background-color: #FF2D55; animation-delay: 0.1s; }
@@ -196,6 +223,7 @@
             cursor: pointer;
             box-shadow: 4px 4px 0px #231F20;
             font-family: inherit;
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
         .toy-btn:active {
@@ -209,9 +237,19 @@
             font-family: 'Courier New', monospace;
             padding: 15px;
             border-radius: 10px;
-            height: 120px;
+            height: 140px;
             overflow-y: auto;
             border: 4px solid #94A3B8;
+        }
+
+        /* --- PROJECT BLOCKS --- */
+        .project-item {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .project-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
         }
 
         /* --- FOOTER / LINKS --- */
@@ -230,11 +268,49 @@
             color: var(--text-dark);
             text-decoration: none;
             box-shadow: 4px 4px 0px #231F20;
+            transition: transform 0.2s, background-color 0.2s;
         }
 
         .toy-links a:hover {
             background: var(--bg-play);
             transform: scale(1.05);
+        }
+
+        /* --- PBS KIDS EXPLICIT INSTRUCTIONAL TOOLTIPS --- */
+        .toy-tip {
+            display: none;
+            position: absolute;
+            background: #231F20;
+            color: #FFFFFF;
+            font-size: 0.85rem;
+            font-family: sans-serif;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 8px;
+            z-index: 99;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Cute small indicator triangle below the tooltip */
+        .toy-tip::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0;
+            border-style: solid;
+            border-color: #231F20 transparent;
+            display: block;
+            width: 0;
+        }
+
+        /* Interactive highlight state for general cards */
+        .interactive-card:hover {
+            background-color: #F8FAFC;
         }
     </style>
 </head>
@@ -247,17 +323,19 @@
         <button class="sound-btn" onclick="playBeep(1200, 'triangle', 0.25)">Ding!</button>
     </div>
 
+    <div id="master-tooltip" class="toy-tip">👉 Click me!</div>
+
     <div class="app-container">
         
-        <div class="toy-banner" onclick="playBeep(587.33, 'sine', 0.4)">
+        <div class="toy-banner" onclick="playBeep(587.33, 'sine', 0.4)" data-tip="🎵 Plays a musical tone!">
             <h1>Aaqil Jaffer's Tech Playground! 🚀</h1>
-            <p>Senior Computer Science Explorer • Metropolitan State University [cite: 22]</p>
+            <p>Senior Computer Science Explorer • Metropolitan State University</p>
         </div>
 
-        <div class="grid-block">
+        <div class="grid-block interactive-card" onclick="playBeep(440, 'triangle', 0.2); pulseElement(this)" data-tip="✨ Click to bounce this block!">
             <h2>Who Am I? 🕵️‍♂️</h2>
             <p style="font-size: 1.1rem; font-weight: bold; color: #475569; margin-top: 15px;">
-                I went to **Normandale Community College** to pick up my Associate degree badge! Now, I am a senior at **Metro State** engineering awesome computer systems. I love tracking data validation, optimizing multi-threaded printer tracks, and configuring secure software architectures! [cite: 22]
+                I went to **Normandale Community College** to pick up my Associate degree badge! Now, I am a senior at **Metro State** engineering awesome computer systems. I love tracking data validation, optimizing multi-threaded printer tracks, and configuring secure software architectures!
             </p>
         </div>
 
@@ -266,24 +344,24 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Class Adventure [cite: 27]</th>
-                        <th>Cool Thing I Learned [cite: 27]</th>
+                        <th>Class Adventure</th>
+                        <th>Cool Thing I Learned</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>ICS 499 Capstone Project [cite: 1]</td>
-                        <td>Building single-page web engines! [cite: 6]</td>
+                    <tr onclick="playBeep(523.25, 'sine', 0.15); sayClassInfo('Capstone', 'Building single page web systems')" data-tip="🗣️ Speaks this row out loud!">
+                        <td>ICS 499 Capstone Project</td>
+                        <td>Building single-page web engines!</td>
                     </tr>
-                    <tr>
-                        <td>Data Structures & Algorithms [cite: 26]</td>
+                    <tr onclick="playBeep(587.33, 'sine', 0.15); sayClassInfo('Data Structures', 'Sorting algorithms at high speeds')" data-tip="🗣️ Speaks this row out loud!">
+                        <td>Data Structures & Algorithms</td>
                         <td>How to sort data at lightning speed!</td>
                     </tr>
-                    <tr>
+                    <tr onclick="playBeep(659.25, 'sine', 0.15); sayClassInfo('Cloud Computing', 'Deploying systems straight to the blue clouds')" data-tip="🗣️ Speaks this row out loud!">
                         <td>Cloud Computing Architecture</td>
                         <td>Deploying system blueprints straight to the clouds!</td>
                     </tr>
-                    <tr>
+                    <tr onclick="playBeep(698.46, 'sine', 0.15); sayClassInfo('Digital Logic Design', 'Programming hardware arrays with VHDL descriptions')" data-tip="🗣️ Speaks this row out loud!">
                         <td>Digital Logic Design</td>
                         <td>Programming real hardware matrices with VHDL!</td>
                     </tr>
@@ -294,23 +372,23 @@
         <div class="grid-block">
             <h2>My Technical Power-Ups! ⚡</h2>
             <div class="badge-box">
-                <div class="badge">Java ☕</div>
-                <div class="badge">Python 🐍</div>
-                <div class="badge">JavaScript ⚡</div>
-                <div class="badge">SQL 🗄️</div>
-                <div class="badge">HTML5 🌐</div>
-                <div class="badge">CSS3 🎨</div>
-                <div class="badge">JavaFX 🖼️</div>
-                <div class="badge">AWS ☁️</div>
-                <div class="badge">Azure ☁️</div>
-                <div class="badge">GCP ☁️</div>
-                <div class="badge">CompTIA Cloud+ 🎖️</div>
-                <div class="badge">Wireshark 🦈</div>
-                <div class="badge">Nmap 🗺️</div>
-                <div class="badge">TryHackMe 🎮</div>
-                <div class="badge">Claude AI 🤖</div>
-                <div class="badge">ChatGPT 🤖</div>
-                <div class="badge">BlackBox AI ⬛</div>
+                <div class="badge" onclick="speakBadge('Java')" data-tip="💥 Pop and Speak!">Java ☕</div>
+                <div class="badge" onclick="speakBadge('Python')" data-tip="💥 Pop and Speak!">Python 🐍</div>
+                <div class="badge" onclick="speakBadge('JavaScript')" data-tip="💥 Pop and Speak!">JavaScript ⚡</div>
+                <div class="badge" onclick="speakBadge('S.Q.L.')" data-tip="💥 Pop and Speak!">SQL 🗄️</div>
+                <div class="badge" onclick="speakBadge('H.T.M.L. 5')" data-tip="💥 Pop and Speak!">HTML5 🌐</div>
+                <div class="badge" onclick="speakBadge('C.S.S. 3')" data-tip="💥 Pop and Speak!">CSS3 🎨</div>
+                <div class="badge" onclick="speakBadge('Java FX')" data-tip="💥 Pop and Speak!">JavaFX 🖼️</div>
+                <div class="badge" onclick="speakBadge('A.W.S.')" data-tip="💥 Pop and Speak!">AWS ☁️</div>
+                <div class="badge" onclick="speakBadge('Azure')" data-tip="💥 Pop and Speak!">Azure ☁️</div>
+                <div class="badge" onclick="speakBadge('G.C.P.')" data-tip="💥 Pop and Speak!">GCP ☁️</div>
+                <div class="badge" onclick="speakBadge('Comp T.I.A. Cloud Plus')" data-tip="💥 Pop and Speak!">CompTIA Cloud+ 🎖️</div>
+                <div class="badge" onclick="speakBadge('Wireshark')" data-tip="💥 Pop and Speak!">Wireshark 🦈</div>
+                <div class="badge" onclick="speakBadge('N-Map')" data-tip="💥 Pop and Speak!">Nmap 🗺️</div>
+                <div class="badge" onclick="speakBadge('Try Hack Me')" data-tip="💥 Pop and Speak!">TryHackMe 🎮</div>
+                <div class="badge" onclick="speakBadge('Claude A.I.')" data-tip="💥 Pop and Speak!">Claude AI 🤖</div>
+                <div class="badge" onclick="speakBadge('Chat G.P.T.')" data-tip="💥 Pop and Speak!">ChatGPT 🤖</div>
+                <div class="badge" onclick="speakBadge('Black Box A.I.')" data-tip="💥 Pop and Speak!">BlackBox AI ⬛</div>
             </div>
         </div>
 
@@ -319,9 +397,9 @@
             <p><strong>Educational Objective:</strong> Stop the threads from causing a race condition! Hit the execution switches to fire off workers and watch if the output stays sorted or goes into absolute chaos!</p>
             
             <div class="control-panel">
-                <button class="toy-btn" style="background-color: var(--accent-orange);" onclick="runSimulation(false)">Fire Unsynced Chaos! 🔥</button>
-                <button class="toy-btn" style="background-color: var(--accent-green);" onclick="runSimulation(true)">Fire Synced Order! 🟢</button>
-                <button class="toy-btn" style="background-color: #64748B;" onclick="clearMonitor()">Reset Screen</button>
+                <button class="toy-btn" style="background-color: var(--accent-orange);" onclick="runSimulation(false)" data-tip="🔥 Causes a race condition scramble!">Fire Unsynced Chaos! 🔥</button>
+                <button class="toy-btn" style="background-color: var(--accent-green);" onclick="runSimulation(true)" data-tip="🟢 Prints smoothly and in order!">Fire Synced Order! 🟢</button>
+                <button class="toy-btn" style="background-color: #64748B;" onclick="clearMonitor()" data-tip="🧼 Wipes the monitor clean!">Reset Screen</button>
             </div>
 
             <div class="printer-monitor" id="monitor">Click a switch above to deploy thread workers...</div>
@@ -330,13 +408,13 @@
         <div class="grid-block">
             <h2>Cool Inventions I Worked On! 🛠️</h2>
             
-            <div style="background: #FFF8E1; border: 3px dashed #FFB300; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+            <div class="project-item" style="background: #FFF8E1; border: 3px dashed #FFB300; padding: 15px; border-radius: 15px; margin-bottom: 15px;" onclick="playBeep(700, 'square', 0.2); alert('Hardware Mode Engaged: Artix-7 logic gates compiled completely.')" data-tip="⚡ Inspect system hardware details!">
                 <h3 style="margin:0; color: #FF6F00;">👾 FPGA Multi-Mode Gameplay Board</h3>
                 <p style="margin: 5px 0 0 0; font-weight: bold;">Built native hardware layouts using precise hardware description languages inside the Xilinx Artix-7 chip matrix!</p>
                 <p style="font-size: 0.9rem; margin: 5px 0 0 0;"><strong>Power Tools:</strong> VHDL, Vivado, XC7A100T Architecture</p>
             </div>
 
-            <div style="background: #E8F5E9; border: 3px dashed #4CAF50; padding: 15px; border-radius: 15px;">
+            <div class="project-item" style="background: #E8F5E9; border: 3px dashed #4CAF50; padding: 15px; border-radius: 15px;" onclick="playBeep(1000, 'sine', 0.2); alert('Security Shield Verified: NIST SP 800-161 constraints applied successfully.')" data-tip="🛡️ Run data protection analysis!">
                 <h3 style="margin:0; color: #2E7D32;">🛡️ NIST 800-161 Threat Shield Case Study</h3>
                 <p style="margin: 5px 0 0 0; font-weight: bold;">Audited hardware boundary provenance and chiplet interconnect security lines to intercept sub-tier supply manipulations.</p>
                 <p style="font-size: 0.9rem; margin: 5px 0 0 0;"><strong>Power Tools:</strong> Cybersecurity Diagnostic Frameworks, Risk Assessments</p>
@@ -344,14 +422,14 @@
         </div>
 
         <div class="toy-links">
-            <a href="https://github.com/YourUsername" target="_blank" onclick="playBeep(880, 'sine', 0.1)">My GitHub Toolbox 🛠️ [cite: 42]</a>
-            <a href="https://linkedin.com/in/YourUsername" target="_blank" onclick="playBeep(987.77, 'sine', 0.1)">My Professional Base 🚀</a>
+            <a href="https://github.com" target="_blank" onclick="playBeep(880, 'sine', 0.1)" data-tip="🐙 Leaves site to view code repository">My GitHub Toolbox 🛠️</a>
+            <a href="https://linkedin.com" target="_blank" onclick="playBeep(987.77, 'sine', 0.1)" data-tip="💼 Leaves site to view network profile">My Professional Base 🚀</a>
         </div>
 
     </div>
 
     <script>
-        // Web Audio API Synth Engine
+        /* --- SOUND INTERPRETATION INFRASTRUCTURE --- */
         let audioCtx = null;
         function initAudio() {
             if (!audioCtx) {
@@ -383,7 +461,60 @@
             }
         }
 
-        // Logic Engine Concurrency Engine Simulator
+        /* --- NATIVE SPEECH SYNTHESIS ENGINE (THE TOY TALKER) --- */
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Terminate pending utterances
+                let utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.05; // Quick, cheerful cadence
+                utterance.pitch = 1.1; // Bright tone
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakBadge(name) {
+            playBeep(900, 'sine', 0.1);
+            speakText(`Power up: ${name}!`);
+        }
+
+        function sayClassInfo(name, desc) {
+            speakText(`In ${name}, the objective is: ${desc}!`);
+        }
+
+        /* --- VISUAL DEFORMATION MICRO-ANIMATIONS --- */
+        function pulseElement(element) {
+            element.style.transform = "scale(0.97) translateY(2px)";
+            setTimeout(() => {
+                element.style.transform = "none";
+            }, 150);
+        }
+
+        /* --- HOVER DEPENDENT INSTRUCTION GUIDE (DYNAMIC TOOLTIP) --- */
+        const tooltip = document.getElementById('master-tooltip');
+        
+        document.body.addEventListener('mouseover', (e) => {
+            const interactiveTarget = e.target.closest('[data-tip]');
+            if (interactiveTarget) {
+                const hintText = interactiveTarget.getAttribute('data-tip');
+                tooltip.textContent = hintText;
+                tooltip.style.display = 'block';
+                
+                // Position logic directly above the object center line
+                const bounds = interactiveTarget.getBoundingClientRect();
+                const scrollY = window.scrollY;
+                
+                tooltip.style.left = `${bounds.left + (bounds.width / 2) - (tooltip.offsetWidth / 2)}px`;
+                tooltip.style.top = `${bounds.top + scrollY - tooltip.offsetHeight - 10}px`;
+            }
+        });
+
+        document.body.addEventListener('mouseout', (e) => {
+            if (e.target.closest('[data-tip]')) {
+                tooltip.style.display = 'none';
+            }
+        });
+
+        /* --- CONCURRENCY SIMULATOR --- */
         const monitor = document.getElementById('monitor');
         
         function clearMonitor() {
@@ -399,7 +530,6 @@
                 playBeep(600, 'sine', 0.15);
                 setTimeout(() => playBeep(800, 'sine', 0.15), 100);
                 
-                // Ordered, synchronized thread queue
                 outputs.push("[Thread-A] Accessing Shared Printer Memory Resource...");
                 outputs.push("[Thread-A] Writing Block Content: 'AAQIL'");
                 outputs.push("[Thread-A] Execution complete safely.");
@@ -408,7 +538,7 @@
                 outputs.push("[Thread-B] Execution complete safely.");
             } else {
                 playBeep(250, 'square', 0.3);
-                // Race condition interleaving chaos simulation
+                
                 outputs.push("[Thread-A] Accessing Resource...");
                 outputs.push("💥 RACE CONDITION WARNING: [Thread-B] Intercepted memory line raw!");
                 outputs.push("[Thread-B] Writing Block Content: 'JAF'");
