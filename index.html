@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Security: Strict Content Security Policy to minimize XSS and framing vectors -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta name="referrer" content="no-referrer">
     <title>Falcon Operations Console | Security Architecture</title>
     <style>
         /* --- CROWDSTRIKE INSPIRED CYBERPUNK PALETTE --- */
@@ -18,7 +23,6 @@
             --border-glow: 1px solid #1e293b;
         }
 
-        /* --- PROCEDURAL BACKGROUND GRID & GLITCH ANIMATIONS --- */
         @keyframes scanline {
             0% { transform: translateY(-100%); }
             100% { transform: translateY(100%); }
@@ -27,11 +31,6 @@
         @keyframes glitch-header {
             0%, 100% { text-shadow: 2px 0 0 var(--falcon-red), -2px 0 0 var(--neon-cyan); }
             50% { text-shadow: -2px 0 0 var(--falcon-red), 2px 0 0 var(--neon-cyan); }
-        }
-
-        @keyframes pulse-threat {
-            0%, 100% { box-shadow: 0 0 5px var(--falcon-red-dim), inset 0 0 5px var(--falcon-red-dim); }
-            50% { box-shadow: 0 0 20px var(--falcon-red), inset 0 0 10px var(--falcon-red); }
         }
 
         body {
@@ -61,38 +60,46 @@
             pointer-events: none;
         }
 
-        /* --- GLOBAL INSTRUCTION BANNER SYSTEM --- */
-        .instruction-banner {
+        /* --- HEAD UP DISPLAY DIRECTIONAL INSTRUCTIONS --- */
+        .hud-instructions {
             width: 100%;
             max-width: 1000px;
             background: rgba(13, 17, 39, 0.9);
             border-left: 4px solid var(--neon-cyan);
-            padding: 12px 20px;
+            padding: 15px 20px;
             margin-bottom: 25px;
             border-radius: 4px;
             box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
         }
 
-        .instruction-banner p {
+        .hud-instructions p {
             margin: 0;
             font-size: 0.9rem;
             color: var(--neon-cyan);
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
-        /* --- CONSOLE CONTAINER --- */
+        .hud-instructions ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        /* --- MAIN DASHBOARD CONTAINER --- */
         .console-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 25px;
             max-width: 1000px;
             width: 100%;
-            perspective: 1500px; /* Essential for 3D card flipping loops */
+            perspective: 1500px;
         }
 
-        /* --- TOP TELEMETRY HEADER --- */
+        /* --- SECTION 1: HEADER REGISTRY --- */
         .telemetry-header {
             background: var(--bg-panel);
             border: var(--border-glow);
@@ -102,14 +109,11 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .telemetry-header::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent 0%, rgba(252, 42, 74, 0.05) 100%);
-            pointer-events: none;
+        .telemetry-header:hover {
+            transform: scale(1.01);
         }
 
         .telemetry-header h1 {
@@ -132,37 +136,28 @@
             border-radius: 4px;
         }
 
-        /* --- PURE CSS INSTRUCTIONAL BOX HOVER MECHANICS --- */
-        .hint-overlay {
+        /* --- DIRECTIONAL ACTION FLAGS --- */
+        .action-flag {
             position: absolute;
-            bottom: 10px;
+            top: 12px;
             right: 15px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            background: rgba(6, 8, 20, 0.8);
-            padding: 2px 8px;
-            border: 1px dashed var(--text-muted);
-            border-radius: 3px;
-            pointer-events: none;
-            transition: all 0.2s ease;
-        }
-
-        .interactive-node:hover .hint-overlay {
+            font-size: 0.7rem;
             color: var(--neon-cyan);
-            border-color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.1);
+            padding: 3px 8px;
+            border: 1px solid var(--neon-cyan);
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
         }
 
-        /* --- 3D FLIP CARD LAYOUT COMPONENT --- */
+        /* --- SECTION 2: IDENTITY PROFILE CARD (3D CARD FLIP) --- */
         .flip-card-container {
             width: 100%;
             height: 220px;
             cursor: pointer;
             position: relative;
-        }
-
-        /* Hidden checkbox pattern to handle click-to-flip transitions permanently without JS */
-        .flip-trigger {
-            display: none;
         }
 
         .flip-card-inner {
@@ -173,8 +168,7 @@
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* CSS Selector to capture the click state toggle */
-        .flip-trigger:checked + .flip-card-inner {
+        .flip-card-container.is-flipped .flip-card-inner {
             transform: rotateY(180deg);
         }
 
@@ -203,7 +197,7 @@
             justify-content: center;
         }
 
-        /* --- METRIC SPECTROMETER DATA TABLES --- */
+        /* --- SECTION 3: ACADEMIC REGISTERS TABLE --- */
         .data-table-block {
             background: var(--bg-panel);
             border: var(--border-glow);
@@ -232,11 +226,12 @@
 
         tr {
             border-bottom: 1px solid rgba(30, 41, 59, 0.5);
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         tr:hover {
-            background: rgba(0, 243, 255, 0.03);
+            background: rgba(0, 243, 255, 0.04);
+            transform: scale(1.005) translateX(4px);
         }
 
         td {
@@ -244,7 +239,7 @@
             color: #cbd5e1;
         }
 
-        /* --- KERNEL CAPABILITY INVENTORY (BADGES) --- */
+        /* --- SECTION 4: PLATFORM COMMAND BADGES --- */
         .matrix-badge-box {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -261,20 +256,19 @@
             font-size: 0.75rem;
             font-weight: bold;
             color: #94a3b8;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.2s ease;
+            cursor: crosshair;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Pure CSS Micro-Glitch on Hover */
         .matrix-badge:hover {
             border-color: var(--neon-cyan);
             color: var(--neon-cyan);
             background: rgba(0, 243, 255, 0.05);
-            transform: scale(1.05);
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 243, 255, 0.1);
         }
 
-        /* --- THE INTERACTIVE CONCURRENCY LAB (CSS CONTROLLED STATES) --- */
+        /* --- SECTION 5: CONCURRENCY PIPELINE VERIFICATION LAB --- */
         .concurrency-simulation-block {
             background: var(--bg-panel);
             border: var(--border-glow);
@@ -283,95 +277,75 @@
             position: relative;
         }
 
-        /* Radio triggers to handle the selection state inside the simulation container */
-        .sim-radio {
-            display: none;
-        }
-
         .sim-controls {
             display: flex;
             gap: 15px;
             margin: 20px 0;
         }
 
-        .sim-label {
-            padding: 10px 20px;
+        .sim-btn {
+            padding: 12px 20px;
             border: 1px solid #1e293b;
-            background: rgba(6, 8, 20, 0.4);
+            background: rgba(6, 8, 20, 0.6);
+            color: #94a3b8;
             border-radius: 4px;
             cursor: pointer;
+            font-family: inherit;
             font-size: 0.8rem;
             font-weight: bold;
             transition: all 0.2s ease;
         }
 
-        .sim-label:hover {
+        .sim-btn:hover {
             background: rgba(255, 255, 255, 0.05);
             border-color: var(--text-muted);
+            color: var(--text-main);
         }
 
-        /* Wire state changes using conditional sister element lookups */
-        #radio-chaos:checked ~ .sim-controls .label-chaos {
+        .sim-btn.active-chaos {
             border-color: var(--falcon-red);
             color: var(--falcon-red);
             background: rgba(252, 42, 74, 0.1);
-            box-shadow: 0 0 10px rgba(252, 42, 74, 0.2);
+            box-shadow: 0 0 15px rgba(252, 42, 74, 0.2);
         }
 
-        #radio-synced:checked ~ .sim-controls .label-synced {
+        .sim-btn.active-synced {
             border-color: var(--neon-green);
             color: var(--neon-green);
             background: rgba(0, 255, 102, 0.1);
-            box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
         }
 
-        /* Pipeline Monitor Output Buffer Display Configurations */
         .pipeline-monitor {
             background: #030712;
             border: 1px solid #111827;
             border-radius: 6px;
             padding: 15px;
             height: 160px;
-            overflow-y: hidden;
+            overflow-y: auto;
             position: relative;
-        }
-
-        .stream-output {
-            display: none;
             font-size: 0.8rem;
-            line-height: 1.5;
-        }
-
-        /* CSS routing engine to drop correct logs depending on active selection code lines */
-        #radio-chaos:checked ~ .pipeline-monitor .stream-chaos {
-            display: block;
-        }
-
-        #radio-synced:checked ~ .pipeline-monitor .stream-synced {
-            display: block;
-        }
-
-        #radio-idle:checked ~ .pipeline-monitor .stream-idle {
-            display: block;
+            line-height: 1.6;
         }
 
         .log-line {
             margin: 4px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            width: 0;
-            animation: typing-effect 1.5s steps(40, end) forwards;
+            border-left: 2px solid transparent;
+            padding-left: 8px;
+            opacity: 0;
+            transform: translateX(-10px);
+            animation: logsIn 0.25s forwards cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes typing-effect {
-            from { width: 0; }
-            to { width: 100%; }
+        @keyframes logsIn {
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .crit-text { color: var(--falcon-red); font-weight: bold; }
-        .sec-text { color: var(--neon-green); }
+        .crit-text { border-left-color: var(--falcon-red); color: var(--falcon-red); font-weight: bold; }
+        .sec-text { border-left-color: var(--neon-green); color: var(--neon-green); }
+        .info-text { border-left-color: var(--neon-cyan); color: var(--neon-cyan); }
 
-        /* --- THREAT ANALYSIS ARCHITECTURE CARDS --- */
+        /* --- SECTION 6: TARGET ARCHITECTURE ENGINE CARDS --- */
         .architecture-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -387,25 +361,24 @@
             border: 1px solid #1e293b;
             border-radius: 6px;
             padding: 20px;
+            position: relative;
             transition: all 0.3s ease;
         }
 
         .arch-card:hover {
-            border-color: var(--text-muted);
+            border-color: var(--neon-cyan);
             background: var(--bg-panel);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 243, 255, 0.05);
         }
 
-        /* --- EXPANDABLE FULL SPEC DETAILS CONTAINER --- */
+        /* --- SECTION 7: EXPANDABLE SPECIFICATION BLUEPRINTS --- */
         .accordion-block {
             background: var(--bg-panel);
             border: var(--border-glow);
             border-radius: 8px;
             overflow: hidden;
-        }
-
-        .accordion-trigger {
-            display: none;
+            position: relative;
         }
 
         .accordion-header {
@@ -417,24 +390,26 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 0.9rem;
+            user-select: none;
         }
 
         .accordion-content {
             max-height: 0;
             padding: 0 20px;
-            transition: all 0.3s cubic-bezier(0, 1, 0, 1);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             color: #94a3b8;
             font-size: 0.85rem;
             line-height: 1.6;
         }
 
-        .accordion-trigger:checked ~ .accordion-content {
-            max-height: 1000px;
+        .accordion-block.is-expanded .accordion-content {
+            max-height: 200px;
             padding: 20px;
             border-top: 1px solid #1e293b;
         }
 
-        /* --- CONSOLE LOG FOOTER ROUTING --- */
+        /* --- SECTION 8: LINK OUTLET DIRECTORY --- */
         .terminal-links {
             display: flex;
             gap: 20px;
@@ -454,6 +429,7 @@
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: bold;
+            position: relative;
             transition: all 0.2s ease;
         }
 
@@ -461,45 +437,57 @@
             background: rgba(0, 243, 255, 0.05);
             border-color: var(--neon-cyan);
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
 
-    <div class="instruction-banner">
-        <p>⚡ <strong>CONSOLE TELEMETRY INSTRUMENT:</strong> Click elements containing dashed border prompts to verify thread behaviors, run active kernel stack queries, or flip modules to inspect system details.</p>
+    <!-- HUD SYSTEM GLOBAL DIRECTIONS -->
+    <div id="section-instructions" class="hud-instructions">
+        <p>📡 CORES OPERATION INTERFACE DIRECTIONS:</p>
+        <ul>
+            <li>[Module 02]: Click directly on the Profile Container to trigger a 3D hardware orientation pivot transformation.</li>
+            <li>[Module 04]: Mouse over individual Capability metrics to generate localized high-velocity scaling responses.</li>
+            <li>[Module 05]: Click either operational button parameter to compute data execution scenarios live in the Buffer Monitor.</li>
+            <li>[Module 07]: Click the Accordion Header band to expand underlying operational blueprint documentation schemas.</li>
+        </ul>
     </div>
 
     <div class="console-grid">
 
-        <header class="telemetry-header interactive-node">
+        <!-- MODULE 01: TELEMETRY HEADER REGISTRY -->
+        <header id="section-header" class="telemetry-header">
+            <span class="action-flag">System Registry</span>
             <h1>AAQIL_JAFFER // STACK_CONSOLE_v2.026</h1>
             <span class="telemetry-status">🛡️ FALCON KERNEL LINK ENGAGED</span>
-            <div class="hint-overlay">Telemetry Node Online</div>
         </header>
 
-        <label class="flip-card-container">
-            <input type="checkbox" class="flip-trigger">
+        <!-- MODULE 02: IDENTITY STACK LAYER (3D FLIP MODULE) -->
+        <div id="section-profile" class="flip-card-container" onclick="toggleCardFlip(this)">
+            <span class="action-flag" style="z-index: 10;">Interactive Matrix: Click to Flip</span>
             <div class="flip-card-inner">
-                <div class="card-front interactive-node">
+                <!-- CARD FACE FRONT -->
+                <div class="card-front">
                     <h2 style="color: var(--neon-cyan); margin-top: 0; font-size: 1.1rem; text-transform: uppercase;">⚡ Identity Profile // Node Info</h2>
                     <p style="line-height: 1.6; color: #cbd5e1; font-size: 0.9rem;">
-                        Origin payload trace detected at <strong>Normandale Community College</strong> (Associate Identity Matrix). Infrastructure current baseline mapped as a senior in the Bachelor of Computer Sience degree  at <strong>Metropolitan State University</strong>.
+                        Origin payload trace detected at <strong>Normandale Community College</strong> (Associate Identity Matrix). Infrastructure current baseline mapped as Senior Engineering Platform at <strong>Metropolitan State University</strong>.
                     </p>
-                    <div class="hint-overlay">👇 CLICK INTERACTIVE CARD TO FLIP MODULE</div>
                 </div>
+                <!-- CARD FACE BACK -->
                 <div class="card-back">
                     <h2 style="color: var(--neon-green); margin-top: 0; font-size: 1.1rem; text-transform: uppercase;">🛡️ Execution Vectors Verified</h2>
                     <p style="line-height: 1.6; color: #94a3b8; font-size: 0.85rem; margin: 0;">
-                        Primary objective: Validation arrays execution monitoring, multi-threaded processor race hazard reduction, data consistency maintenance, and sub-tier supply chain integrity assurance.
+                        Primary objective parameters: Validation arrays execution monitoring, multi-threaded processor race hazard reduction, data consistency maintenance, and sub-tier supply chain integrity assurance.
                     </p>
-                    <div class="hint-overlay">👇 CLICK TO ROTATE ENGINE TO FRONT</div>
                 </div>
             </div>
-        </label>
+        </div>
 
-        <section class="data-table-block">
-            <h2 style="color: var(--text-main); margin-top: 0; font-size: 1.1rem; text-transform: uppercase;">📊 Curriculum Core Registers</h2>
+        <!-- MODULE 03: TELEMETRY ACADEMIC MATRIX DATA TABLE -->
+        <section id="section-curriculum" class="data-table-block">
+            <span class="action-flag">Curriculum Logs</span>
+            <h2 style="color: var(--text-main); margin-top: 0; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 20px;">📊 Curriculum Core Registers</h2>
             <table>
                 <thead>
                     <tr>
@@ -526,18 +514,19 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="hint-overlay">💡 Hover rows to view line trace</div>
         </section>
 
-        <section class="data-table-block">
-            <h2 style="color: var(--text-main); margin-top: 0; font-size: 1.1rem; text-transform: uppercase;">⚡ Hardware & Platform Command Utilities</h2>
+        <!-- MODULE 04: CAPABILITY INVENTORY MATRIX BADGES -->
+        <section id="section-skills" class="data-table-block">
+            <span class="action-flag">Capability Matrix</span>
+            <h2 style="color: var(--text-main); margin-top: 0; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 20px;">⚡ Hardware & Platform Command Utilities</h2>
             <div class="matrix-badge-box">
                 <div class="matrix-badge">Java</div>
                 <div class="matrix-badge">Python</div>
                 <div class="matrix-badge">JavaScript</div>
                 <div class="matrix-badge">SQL Layer</div>
                 <div class="matrix-badge">VHDL Logic</div>
-                <div class="matrix-badge">Vivado IDE</div>
+                <div class="matrix-badge">Vivado</div>
                 <div class="matrix-badge">AWS Cloud</div>
                 <div class="matrix-badge">Azure Stack</div>
                 <div class="matrix-badge">GCP Engine</div>
@@ -547,57 +536,33 @@
                 <div class="matrix-badge">Kibana Log</div>
                 <div class="matrix-badge">Packetbeat</div>
             </div>
-            <div class="hint-overlay">🧪 Hover capability node to check response signature</div>
         </section>
 
-        <section class="concurrency-simulation-block" id="concurrency-box">
-            <input type="radio" name="sim-state" id="radio-idle" class="sim-radio" checked>
-            <input type="radio" name="sim-state" id="radio-chaos" class="sim-radio">
-            <input type="radio" name="sim-state" id="radio-synced" class="sim-radio">
-
+        <!-- MODULE 05: THE CONCURRENCY PRINTER LAB SIMULATOR -->
+        <section id="section-simulation" class="concurrency-simulation-block">
+            <span class="action-flag">Simulation Engine</span>
             <h2 style="color: var(--text-main); margin-top: 0; font-size: 1.1rem; text-transform: uppercase;">🖨️ Concurrency Pipeline Verification Lab</h2>
             <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.5;">
                 Select execution configuration register flags below to deploy threaded tasks into the logging monitor array. Watch closely to see if mutual exclusions protect memory contents.
             </p>
 
             <div class="sim-controls">
-                <label for="radio-chaos" class="sim-label label-chaos">⚠️ DEPLOY UNSYNCHRONIZED CHAOS</label>
-                <label for="radio-synced" class="sim-label label-synced">🟢 DEPLOY SYNCHRONIZED ORDER</label>
-                <label for="radio-idle" class="sim-label" style="color: #64748b;">🧼 PURGE LOG BUFFER</label>
+                <button id="btn-chaos" class="sim-btn" onclick="executeSimulation('chaos')">⚠️ DEPLOY UNSYNCHRONIZED CHAOS</button>
+                <button id="btn-synced" class="sim-btn" onclick="executeSimulation('synced')">🟢 DEPLOY SYNCHRONIZED ORDER</button>
+                <button id="btn-purge" class="sim-btn" onclick="executeSimulation('purge')">🧼 PURGE LOG BUFFER</button>
             </div>
 
-            <div class="pipeline-monitor">
-                
-                <div class="stream-output stream-idle" style="display: block; color: var(--text-muted);">
-                    [SYSTEM_LOG] Output channels idle. Select configuration switch flag above to begin data stream tracing...
-                </div>
-
-                <div class="stream-output stream-chaos">
-                    <div class="log-line">[Thread-A] Accessing Resource Shared Pointer...</div>
-                    <div class="log-line crit-text">💥 CRITICAL COLLISION HAZARD: Thread-B breached memory isolation perimeter!</div>
-                    <div class="log-line">[Thread-B] Writing memory frame segment data out: 'JAF'</div>
-                    <div class="log-line">[Thread-A] Overwrote internal operational pipeline registers: 'AAQIL'</div>
-                    <div class="log-line">[Thread-B] Interleaved core heap frame tail append: 'FER'</div>
-                    <div class="log-line crit-text">⚠️ PIPELINE TERMINATED: CORRUPTED SEGMENT GENERATED: 'JAF-AAQIL-FER'</div>
-                </div>
-
-                <div class="stream-output stream-synced">
-                    <div class="log-line sec-text">[Mutex-Lock] Lock requested successfully by worker Thread-A.</div>
-                    <div class="log-line">[Thread-A] Block memory write process initiated: 'AAQIL'</div>
-                    <div class="log-line sec-text">[Mutex-Release] Lock released by Thread-A safely. Memory pristine.</div>
-                    <div class="log-line sec-text">[Mutex-Lock] Lock requested successfully by worker Thread-B.</div>
-                    <div class="log-line">[Thread-B] Block memory write process initiated: 'JAFFER'</div>
-                    <div class="log-line sec-text">[Mutex-Release] Thread-B context switch execution clean. Output sorted.</div>
-                </div>
-
+            <div id="monitor-buffer" class="pipeline-monitor">
+                <div class="log-line info-text">[SYSTEM_LOG] Output channels idle. Select configuration button parameter above to begin simulation sequence...</div>
             </div>
-            <div class="hint-overlay">🛠️ Select configuration register flag to drive log execution stream</div>
         </section>
 
-        <section class="architecture-grid">
+        <!-- MODULE 06: TARGET ARCHITECTURE ENGINE CARDS -->
+        <section id="section-architecture" class="architecture-grid">
             
             <div class="arch-card">
-                <h3 style="color: #ffb300; margin-top: 0; font-size: 0.95rem; text-transform: uppercase;">👾 FPGA Multi-Mode Gameplay Logic Matrix</h3>
+                <span class="action-flag" style="top: 8px; right: 10px;">Engineering Core</span>
+                <h3 style="color: #ffb300; margin-top: 0; font-size: 0.95rem; text-transform: uppercase; margin-right: 100px;">👾 FPGA Multi-Mode Gameplay Logic Matrix</h3>
                 <p style="font-size: 0.8rem; line-height: 1.5; color: #94a3b8; margin-bottom: 0;">
                     Constructed direct, low-level hardware paths using precise structural layout files mapped straight into the physical gates of a Xilinx Artix-7 processing array.
                     <br><br><strong>Environment Matrix:</strong> VHDL, Vivado Engine, XC7A100T Hardware Architecture Profile
@@ -605,7 +570,8 @@
             </div>
 
             <div class="arch-card">
-                <h3 style="color: var(--neon-green); margin-top: 0; font-size: 0.95rem; text-transform: uppercase;">🛡️ NIST SP 800-161 Threat Assessment Model</h3>
+                <span class="action-flag" style="top: 8px; right: 10px;">Security Framework</span>
+                <h3 style="color: var(--neon-green); margin-top: 0; font-size: 0.95rem; text-transform: uppercase; margin-right: 100px;">🛡️ NIST SP 800-161 Threat Assessment Model</h3>
                 <p style="font-size: 0.8rem; line-height: 1.5; color: #94a3b8; margin-bottom: 0;">
                     Audited hardware perimeter components, validation checkpoints, and microchip interconnect positions to prevent malicious insertions or modifications within the manufacturing lifecycle.
                     <br><br><strong>Environment Matrix:</strong> Cybersecurity Control Architecture Frameworks, Provenance Logs
@@ -614,12 +580,13 @@
 
         </section>
 
-        <section class="accordion-block">
-            <input type="checkbox" id="acc-toggle-1" class="accordion-trigger">
-            <label for="acc-toggle-1" class="accordion-header">
+        <!-- MODULE 07: EXPANDABLE SPECIFICATION BLUEPRINTS -->
+        <section id="section-blueprints" class="accordion-block">
+            <span class="action-flag" style="top: 15px; right: 40px;">Blueprint Specification</span>
+            <div class="accordion-header" onclick="toggleAccordion(this)">
                 🔎 VIEW KERNEL CORE RISK ANALYSIS BLUEPRINTS
-                <span style="color: var(--neon-cyan);">[+] EXPAND TELEMETRY DIAGRAM</span>
-            </label>
+                <span id="accordion-icon" style="color: var(--neon-cyan); margin-right: 120px;">[+] EXPAND TELEMETRY DIAGRAM</span>
+            </div>
             <div class="accordion-content">
                 <p style="margin: 0;">
                     <strong>System Target Architecture Security State Summary:</strong> All inputs moving into core operational spaces pass through verification pathways. Dynamic execution boundaries prevent timing side-channel data collection leaks. Processing thread synchronization routes execute via strict hardware indicators, effectively removing data classification degradation hazards or state race conditions across shared hardware boundaries.
@@ -629,10 +596,92 @@
 
     </div>
 
-    <footer class="terminal-links">
-        <a href="https://github.com" target="_blank" class="terminal-link-item">» LOG OUTBOUND CONNECT: ACCESS GITHUB TOOLS REPOSITORY</a>
-        <a href="https://linkedin.com" target="_blank" class="terminal-link-item">» LOG OUTBOUND CONNECT: ENGAGE PROFESSIONAL NETWORK NODE</a>
+    <!-- MODULE 08: LINK OUTLET DIRECTORY -->
+    <!-- Security: Included rel="noopener noreferrer" to explicitly defeat reverse tab-nabbing vulnerabilities -->
+    <footer id="section-directory" class="terminal-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="terminal-link-item">» LINKED GITHUB TOOLS REPOSITORY DIRECTORY NODE</a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="terminal-link-item">» LINKED LINKEDIN PROFESSIONAL PROFILE OUTLET NODE</a>
     </footer>
 
+    <!-- --- JAVASCRIPT ANIMATION AND EVENT ENGINEERING --- -->
+    <script>
+        // Module 02 Event Engine: Handles 3D Rotation Animation Trigger safely
+        function toggleCardFlip(cardElement) {
+            cardElement.classList.toggle('is-flipped');
+        }
+
+        // Module 07 Event Engine: Programmatic control over smoothly sliding block panels
+        function toggleAccordion(headerElement) {
+            const block = headerElement.parentElement;
+            const icon = document.getElementById('accordion-icon');
+            block.classList.toggle('is-expanded');
+            
+            if(block.classList.contains('is-expanded')) {
+                icon.textContent = "[-] COLLAPSE TELEMETRY DIAGRAM";
+            } else {
+                icon.textContent = "[+] EXPAND TELEMETRY DIAGRAM";
+            }
+        }
+
+        // Module 05 Engine: Asynchronous output stream generator simulating thread scheduling states
+        function executeSimulation(mode) {
+            const monitor = document.getElementById('monitor-buffer');
+            const btnChaos = document.getElementById('btn-chaos');
+            const btnSynced = document.getElementById('btn-synced');
+
+            // Reset UI Control button indicators
+            btnChaos.classList.remove('active-chaos');
+            btnSynced.classList.remove('active-synced');
+
+            // Purge condition branch
+            if (mode === 'purge') {
+                monitor.innerHTML = '<div class="log-line info-text">[SYSTEM_LOG] Output buffer arrays purged. Operational channels clear.</div>';
+                return;
+            }
+
+            // Assign structural telemetry configurations depending on parameter target
+            let lines = [];
+            if (mode === 'chaos') {
+                btnChaos.classList.add('active-chaos');
+                lines = [
+                    { type: 'normal', text: "[Thread-A] Accessing Resource Shared Pointer..." },
+                    { type: 'crit',   text: "💥 CRITICAL COLLISION HAZARD: Thread-B breached memory isolation perimeter!" },
+                    { type: 'normal', text: "[Thread-B] Writing memory frame segment data out: 'JAF'" },
+                    { type: 'normal', text: "[Thread-A] Overwrote internal operational pipeline registers: 'AAQIL'" },
+                    { type: 'normal', text: "[Thread-B] Interleaved core heap frame tail append: 'FER'" },
+                    { type: 'crit',   text: "⚠️ PIPELINE TERMINATED: CORRUPTED SEGMENT GENERATED: 'JAF-AAQIL-FER'" }
+                ];
+            } else if (mode === 'synced') {
+                btnSynced.classList.add('active-synced');
+                lines = [
+                    { type: 'sec',    text: "[Mutex-Lock] Lock requested successfully by worker Thread-A." },
+                    { type: 'normal', text: "[Thread-A] Block memory write process initiated: 'AAQIL'" },
+                    { type: 'sec',    text: "[Mutex-Release] Lock released by Thread-A safely. Memory pristine." },
+                    { type: 'sec',    text: "[Mutex-Lock] Lock requested successfully by worker Thread-B." },
+                    { type: 'normal', text: "[Thread-B] Block memory write process initiated: 'JAFFER'" },
+                    { type: 'sec',    text: "[Mutex-Release] Thread-B context switch execution clean. Output sorted." }
+                ];
+            }
+
+            // Execute automated streaming sequence into DOM node
+            monitor.innerHTML = '';
+            lines.forEach((lineData, index) => {
+                setTimeout(() => {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.className = 'log-line';
+                    
+                    if (lineData.type === 'crit') lineDiv.classList.add('crit-text');
+                    else if (lineData.type === 'sec') lineDiv.classList.add('sec-text');
+                    else if (lineData.type === 'info') lineDiv.classList.add('info-text');
+
+                    // Security Context: Safe text assignment to defend against dynamic string parsing injections (XSS Mitigation)
+                    lineDiv.textContent = lineData.text;
+                    
+                    monitor.appendChild(lineDiv);
+                    monitor.scrollTop = monitor.scrollHeight;
+                }, index * 200); // 200ms sequential animation staggering lag
+            });
+        }
+    </script>
 </body>
 </html>
