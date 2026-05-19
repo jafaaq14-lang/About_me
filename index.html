@@ -344,9 +344,63 @@
             .grid-container { grid-template-columns: 1fr; }
             #logic-toggle-btn { bottom: 20px; right: 20px; width: 48px; height: 48px; }
         }
+
+        /* ==========================================================================
+           INJECTED CARTOON PHYSICS ANIMATIONS (KID-FRIENDLY ADDITIONS)
+           ========================================================================== */
+        
+        /* Persistent Soft Idle Float for Large Infrastructure Components */
+        @keyframes playfulFloat {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(0.5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .logo, .terminal-container {
+            animation: playfulFloat 6s ease-in-out infinite;
+        }
+
+        /* High Elasticity Easing Loops for Interactive Hover States */
+        @keyframes elasticPop {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.06) rotate(-0.5deg); }
+            60% { transform: scale(0.98) rotate(0.5deg); }
+            100% { transform: scale(1.03); }
+        }
+
+        /* Native class targeting via CSS guarantees live tracking on dynamically drawn elements */
+        .btn-console:hover, .card:hover, #logic-toggle-btn:hover, .footer-links a:hover {
+            animation: elasticPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+            cursor: pointer;
+        }
+
+        /* Squash and Stretch Matrix for Forceful Structural Click Actions */
+        @keyframes squashStretch {
+            0% { transform: scale(1); }
+            35% { transform: scale(1.12, 0.82); }
+            65% { transform: scale(0.92, 1.06); }
+            100% { transform: scale(1, 1); }
+        }
+
+        .ani-click-squash {
+            animation: squashStretch 0.4s ease-out !important;
+        }
+
+        /* Overlay Canvas System Architecture Boundary */
+        #animation-particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
+
+    <canvas id="animation-particle-canvas"></canvas>
 
     <header>
         <div class="header-container">
@@ -565,6 +619,81 @@
         // DOM Domination Initialization Hook
         document.addEventListener('DOMContentLoaded', () => {
             showCategory('cloud');
+
+            /* ==========================================================================
+               PARTICLE GENERATION & INTERACTION ENGINE EXTENSION
+               ========================================================================== */
+            const canvas = document.getElementById('animation-particle-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const resizeCanvas = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            let particles = [];
+            // Vibrant palette matching system accents and high-visibility cartoon tones
+            const palette = ['#10B981', '#38BDF8', '#F59E0B', '#EF4444', '#EC4899', '#A855F7'];
+
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 7 + 4;
+                    this.speedX = (Math.random() - 0.5) * 7;
+                    this.speedY = (Math.random() - 0.7) * 7 - 3; // Directional upward bias
+                    this.color = palette[Math.floor(Math.random() * palette.length)];
+                    this.gravity = 0.22;
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.02 + 0.015;
+                }
+                update() {
+                    this.speedY += this.gravity;
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.alpha -= this.decay;
+                }
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            function renderLoop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles = particles.filter(p => p.alpha > 0);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(renderLoop);
+            }
+            renderLoop();
+
+            // Intercept interactions globally to handle original + dynamically swapped elements
+            const interactiveSelectors = '.btn-console, .card, #logic-toggle-btn, .footer-links a';
+            
+            document.body.addEventListener('click', (e) => {
+                const targetNode = e.target.closest(interactiveSelectors);
+                if (targetNode) {
+                    // Trigger physical squash animation pipeline
+                    targetNode.classList.remove('ani-click-squash');
+                    void targetNode.offsetWidth; // Force synchronization step
+                    targetNode.classList.add('ani-click-squash');
+
+                    // Instantiation loop for kinetic bursts
+                    for (let i = 0; i < 16; i++) {
+                        particles.push(new Particle(e.clientX, e.clientY));
+                    }
+                }
+            });
         });
     </script>
 </body>
