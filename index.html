@@ -3,11 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Security: Strict Content Security Policy to minimize XSS and framing vectors -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';">
+    <!-- 
+      ENHANCED SECURITY ARCHITECTURE FRAMEWORK
+      1. Strict Content Security Policy (CSP): Prevents Cross-Site Scripting (XSS) and code injection.
+         - 'self' limits asset loading to the originating origin.
+         - 'unsafe-inline' style/script-src permits localized ecosystem operation blocks without external leakage vectors.
+         - frame-ancestors 'none' explicitly mitigates Clickjacking/UI Redressing vulnerabilities.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; form-action 'none';">
+    <!-- 2. Anti-Sniffing Defense: Enforces authoritative MIME types passed via network layer headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <!-- 3. Frame Protection: Explicitly blocks execution inside external malicious iframe structures -->
     <meta http-equiv="X-Frame-Options" content="DENY">
+    <!-- 4. Leakage Prevention: Strips context-specific query strings or referral data on state movements -->
     <meta name="referrer" content="no-referrer">
+    
     <title>Falcon Operations Console | Security Architecture</title>
     <style>
         /* --- CROWDSTRIKE INSPIRED CYBERPUNK PALETTE --- */
@@ -242,7 +252,7 @@
         /* --- SECTION 4: PLATFORM COMMAND BADGES --- */
         .matrix-badge-box {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 12px;
             margin-top: 15px;
         }
@@ -250,21 +260,22 @@
         .matrix-badge {
             background: rgba(6, 8, 20, 0.5);
             border: 1px solid #1e293b;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
             border-radius: 4px;
             font-size: 0.75rem;
             font-weight: bold;
             color: #94a3b8;
-            cursor: crosshair;
+            cursor: pointer;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
         }
 
         .matrix-badge:hover {
             border-color: var(--neon-cyan);
             color: var(--neon-cyan);
             background: rgba(0, 243, 255, 0.05);
-            transform: scale(1.08) translateY(-2px);
+            transform: scale(1.04) translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 243, 255, 0.1);
         }
 
@@ -279,6 +290,7 @@
 
         .sim-controls {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             margin: 20px 0;
         }
@@ -321,7 +333,7 @@
             border: 1px solid #111827;
             border-radius: 6px;
             padding: 15px;
-            height: 160px;
+            height: 180px;
             overflow-y: auto;
             position: relative;
             font-size: 0.8rem;
@@ -344,6 +356,8 @@
         .crit-text { border-left-color: var(--falcon-red); color: var(--falcon-red); font-weight: bold; }
         .sec-text { border-left-color: var(--neon-green); color: var(--neon-green); }
         .info-text { border-left-color: var(--neon-cyan); color: var(--neon-cyan); }
+        .indent-1 { margin-left: 15px; }
+        .indent-2 { margin-left: 30px; }
 
         /* --- SECTION 6: TARGET ARCHITECTURE ENGINE CARDS --- */
         .architecture-grid {
@@ -404,22 +418,26 @@
         }
 
         .accordion-block.is-expanded .accordion-content {
-            max-height: 200px;
+            max-height: 250px;
             padding: 20px;
             border-top: 1px solid #1e293b;
         }
 
         /* --- SECTION 8: LINK OUTLET DIRECTORY --- */
         .terminal-links {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 20px;
             margin-top: 20px;
             width: 100%;
             max-width: 1000px;
         }
 
+        @media (min-width: 768px) {
+            .terminal-links { grid-template-columns: 1fr 1fr; }
+        }
+
         .terminal-link-item {
-            flex: 1;
             background: var(--bg-panel);
             border: var(--border-glow);
             padding: 15px;
@@ -448,8 +466,8 @@
         <p>📡 CORES OPERATION INTERFACE DIRECTIONS:</p>
         <ul>
             <li>[Module 02]: Click directly on the Profile Container to trigger a 3D hardware orientation pivot transformation.</li>
-            <li>[Module 04]: Mouse over individual Capability metrics to generate localized high-velocity scaling responses.</li>
-            <li>[Module 05]: Click either operational button parameter to compute data execution scenarios live in the Buffer Monitor.</li>
+            <li>[Module 04]: Click on a Domain Registry Badge to filter from broad conceptual architectures into deep tactical components.</li>
+            <li>[Module 05]: Click either operational button parameter to compute real-time concurrency scenarios live in the Buffer Monitor.</li>
             <li>[Module 07]: Click the Accordion Header band to expand underlying operational blueprint documentation schemas.</li>
         </ul>
     </div>
@@ -516,25 +534,33 @@
             </table>
         </section>
 
-        <!-- MODULE 04: CAPABILITY INVENTORY MATRIX BADGES -->
+        <!-- MODULE 04: CLASSIFIED CAPABILITY INVENTORY MATRIX (HIERARCHICAL DRILL-DOWN) -->
         <section id="section-skills" class="data-table-block">
-            <span class="action-flag">Capability Matrix</span>
-            <h2 style="color: var(--text-main); margin-top: 0; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 20px;">⚡ Hardware & Platform Command Utilities</h2>
+            <span class="action-flag">Hierarchical Matrix v2.0</span>
+            <h2 style="color: var(--text-main); margin-top: 0; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 10px;">⚡ Hardware & Platform Command Utilities</h2>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px; line-height: 1.4;">
+                Select a high-level domain matrix container below to execute a deep trace drill-down from macro-architectures into microscopic tactical technical tools.
+            </p>
+            
+            <!-- Tier 1: Broad Macro Domain Registries -->
             <div class="matrix-badge-box">
-                <div class="matrix-badge">Java</div>
-                <div class="matrix-badge">Python</div>
-                <div class="matrix-badge">JavaScript</div>
-                <div class="matrix-badge">SQL Layer</div>
-                <div class="matrix-badge">VHDL Logic</div>
-                <div class="matrix-badge">Vivado</div>
-                <div class="matrix-badge">AWS Cloud</div>
-                <div class="matrix-badge">Azure Stack</div>
-                <div class="matrix-badge">GCP Engine</div>
-                <div class="matrix-badge">Cloud+</div>
-                <div class="matrix-badge">Wireshark</div>
-                <div class="matrix-badge">Nmap Map</div>
-                <div class="matrix-badge">Kibana Log</div>
-                <div class="matrix-badge">Packetbeat</div>
+                <div class="matrix-badge" style="border-color: var(--neon-cyan); color: var(--neon-cyan);" onclick="drillDownMatrix('hardware', this)">
+                    [DOMAIN] Programmable Circuits & Logic
+                </div>
+                <div class="matrix-badge" style="border-color: var(--neon-cyan); color: var(--neon-cyan);" onclick="drillDownMatrix('languages', this)">
+                    [DOMAIN] Software Development Languages
+                </div>
+                <div class="matrix-badge" style="border-color: var(--neon-cyan); color: var(--neon-cyan);" onclick="drillDownMatrix('cloud', this)">
+                    [DOMAIN] Cloud Infrastructure Platforms
+                </div>
+                <div class="matrix-badge" style="border-color: var(--neon-cyan); color: var(--neon-cyan);" onclick="drillDownMatrix('security', this)">
+                    [DOMAIN] Telemetry & Network Diagnostics
+                </div>
+            </div>
+
+            <!-- Tier 2 & 3 Dynamic Drilldown Buffer Monitor -->
+            <div id="matrix-drilldown-monitor" class="pipeline-monitor" style="margin-top: 20px; height: auto; min-height: 120px;">
+                <div class="log-line info-text">[MATRIX_ALERT] Interface awaiting high-level domain selection execution vector...</div>
             </div>
         </section>
 
@@ -562,7 +588,7 @@
             
             <div class="arch-card">
                 <span class="action-flag" style="top: 8px; right: 10px;">Engineering Core</span>
-                <h3 style="color: #ffb300; margin-top: 0; font-size: 0.95rem; text-transform: uppercase; margin-right: 100px;">👾 FPGA Multi-Mode Gameplay Logic Matrix</h3>
+                <h3 style="color: #ffb300; margin-top: 0; font-size: 0.95rem; text-transform: uppercase; padding-right: 110px;">👾 FPGA Multi-Mode Gameplay Logic Matrix</h3>
                 <p style="font-size: 0.8rem; line-height: 1.5; color: #94a3b8; margin-bottom: 0;">
                     Constructed direct, low-level hardware paths using precise structural layout files mapped straight into the physical gates of a Xilinx Artix-7 processing array.
                     <br><br><strong>Environment Matrix:</strong> VHDL, Vivado Engine, XC7A100T Hardware Architecture Profile
@@ -571,7 +597,7 @@
 
             <div class="arch-card">
                 <span class="action-flag" style="top: 8px; right: 10px;">Security Framework</span>
-                <h3 style="color: var(--neon-green); margin-top: 0; font-size: 0.95rem; text-transform: uppercase; margin-right: 100px;">🛡️ NIST SP 800-161 Threat Assessment Model</h3>
+                <h3 style="color: var(--neon-green); margin-top: 0; font-size: 0.95rem; text-transform: uppercase; padding-right: 110px;">🛡️ NIST SP 800-161 Threat Assessment Model</h3>
                 <p style="font-size: 0.8rem; line-height: 1.5; color: #94a3b8; margin-bottom: 0;">
                     Audited hardware perimeter components, validation checkpoints, and microchip interconnect positions to prevent malicious insertions or modifications within the manufacturing lifecycle.
                     <br><br><strong>Environment Matrix:</strong> Cybersecurity Control Architecture Frameworks, Provenance Logs
@@ -585,7 +611,7 @@
             <span class="action-flag" style="top: 15px; right: 40px;">Blueprint Specification</span>
             <div class="accordion-header" onclick="toggleAccordion(this)">
                 🔎 VIEW KERNEL CORE RISK ANALYSIS BLUEPRINTS
-                <span id="accordion-icon" style="color: var(--neon-cyan); margin-right: 120px;">[+] EXPAND TELEMETRY DIAGRAM</span>
+                <span id="accordion-icon" style="color: var(--neon-cyan); padding-right: 110px;">[+] EXPAND TELEMETRY DIAGRAM</span>
             </div>
             <div class="accordion-content">
                 <p style="margin: 0;">
@@ -597,10 +623,19 @@
     </div>
 
     <!-- MODULE 08: LINK OUTLET DIRECTORY -->
-    <!-- Security: Included rel="noopener noreferrer" to explicitly defeat reverse tab-nabbing vulnerabilities -->
+    <!-- 
+      SECURITY COMPLIANCE AUDIT NODES:
+      - Forms action endpoints explicitly disabled via CSP rules.
+      - External resource vectors forced through 'rel="noopener noreferrer"' parameters.
+        Defeats target frame context hijacking conditions (Reverse Tab-nabbing vectors).
+    -->
     <footer id="section-directory" class="terminal-links">
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="terminal-link-item">» LINKED GITHUB TOOLS REPOSITORY DIRECTORY NODE</a>
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="terminal-link-item">» LINKED LINKEDIN PROFESSIONAL PROFILE OUTLET NODE</a>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="terminal-link-item">
+            » LINKED GITHUB TOOLS REPOSITORY DIRECTORY NODE
+        </a>
+        <a href="https://www.linkedin.com/in/aaqil-jaffer-0123456789abcdef2718281828459045235360287471352662497757247093699959574966967627" target="_blank" rel="noopener noreferrer" class="terminal-link-item">
+            » LINKED LINKEDIN PROFESSIONAL PROFILE OUTLET NODE
+        </a>
     </footer>
 
     <!-- --- JAVASCRIPT ANIMATION AND EVENT ENGINEERING --- -->
@@ -623,23 +658,93 @@
             }
         }
 
+        // Module 04 Hierarchical Architecture Engine: Maps macro concepts into atomic tooling components
+        function drillDownMatrix(category, activeBadge) {
+            const displayMonitor = document.getElementById('matrix-drilldown-monitor');
+            
+            // Revert adjacent badge visual accent bounds to baseline status
+            const familyBadges = activeBadge.parentElement.children;
+            for (let b of familyBadges) {
+                b.style.backgroundColor = 'rgba(6, 8, 20, 0.5)';
+            }
+            activeBadge.style.backgroundColor = 'rgba(0, 243, 255, 0.1)';
+
+            displayMonitor.innerHTML = ''; // Flash buffer storage pipeline clean
+            let elements = [];
+
+            if (category === 'hardware') {
+                elements = [
+                    { type: 'info', text: "📁 [MACRO REGISTRY] Broad Concept: Programmable Circuit Boards & Logic Layouts" },
+                    { type: 'sec',  text: " ∟ Middle Framework: Hardware Description Matrices" },
+                    { type: 'text', text: "   ∟ Core Technology Layer: VHDL Logic Architecture Engine", indent: 'indent-2' },
+                    { type: 'text', text: "   ∟ Interface Synthesizer: Vivado IDE Target Compilation Map", indent: 'indent-2' },
+                    { type: 'sec',  text: " ∟ Middle Framework: Prototyping Hardware Development Boards" },
+                    { type: 'text', text: "   ∟ Core Micro-Device Component: Arduino Uno Processing Controller Board", indent: 'indent-2' }
+                ];
+            } else if (category === 'languages') {
+                elements = [
+                    { type: 'info', text: "📁 [MACRO REGISTRY] Broad Concept: Universal Software Execution Languages" },
+                    { type: 'sec',  text: " ∟ Memory Management Taxonomy Model: High-Level Virtual Machine Runtimes" },
+                    { type: 'text', text: "   ∟ Core Technology Layer: Java Enterprise Managed Environment Stack", indent: 'indent-2' },
+                    { type: 'text', text: "   ∟ Core Technology Layer: Python Object Automation Pipeline", indent: 'indent-2' },
+                    { type: 'text', text: "   ∟ Core Technology Layer: JavaScript Async Asynchronous Engine Cluster", indent: 'indent-2' },
+                    { type: 'sec',  text: " ∟ Memory Management Taxonomy Model: Abstract Query Storage Layers" },
+                    { type: 'text', text: "   ∟ Core Technology Layer: SQL Layer Relational Memory Database Management Systems", indent: 'indent-2' },
+                    { type: 'sec',  text: " ∟ Memory Management Taxonomy Model: Direct Unmanaged Hardware Control Systems" },
+                    { type: 'text', text: "   ∟ Core Technology Layer: C Language Procedural Pointer Execution Engine", indent: 'indent-2' }
+                ];
+            } else if (category === 'cloud') {
+                elements = [
+                    { type: 'info', text: "📁 [MACRO REGISTRY] Broad Concept: Enterprise Cloud Computing Architectures & Blueprints" },
+                    { type: 'crit', text: " ∟ Global Standard Target Certification Control Layer: CompTIA Cloud+" },
+                    { type: 'text', text: "   ∟ Core Technology Layer: AWS Cloud Virtualized Compute Ecosystem", indent: 'indent-2' },
+                    { type: 'text', text: "   ∟ Core Technology Layer: Azure Stack Identity Directory Management Matrix", indent: 'indent-2' },
+                    { type: 'text', text: "   ∟ Core Technology Layer: GCP Engine Cloud Clustering Provisioning Arrays", indent: 'indent-2' }
+                ];
+            } else if (category === 'security') {
+                elements = [
+                    { type: 'info', text: "📁 [MACRO REGISTRY] Broad Concept: Real-Time Threat Intelligence Telemetry & Network Diagnostics" },
+                    { type: 'sec',  text: " ∟ Capture Vector Category: Inline Packet Inspection & Interception" },
+                    { type: 'text', text: "   ∟ Core Technology Layer: Wireshark Packet Dissection Network Monitor Node", indent: 'indent-2' },
+                    { type: 'text', text: "   ∟ Core Technology Layer: Nmap Map Perimeter Scan Mapping Terminal", indent: 'indent-2' },
+                    { type: 'sec',  text: " ∟ Capture Vector Category: SIEM Log Collection Pipeline Framework" },
+                    { type: 'text', text: "   ∟ Core Sub-Component: Packetbeat Deep Wire Telemetry Shipper Module", indent: 'indent-2' },
+                    { type: 'text', text: "   ∟ Core Sub-Component: Kibana Log Operational Metric Data Visualization Dashboard", indent: 'indent-2' }
+                ];
+            }
+
+            // Output structural components sequentially via automated typewriter queues
+            elements.forEach((item, index) => {
+                setTimeout(() => {
+                    const line = document.createElement('div');
+                    line.className = 'log-line';
+                    if (item.indent) line.classList.add(item.indent);
+                    
+                    if (item.type === 'crit') line.classList.add('crit-text');
+                    else if (item.type === 'sec') line.classList.add('sec-text');
+                    else if (item.type === 'info') line.classList.add('info-text');
+
+                    // Defend against persistent text parser vector insertion exploits
+                    line.textContent = item.text;
+                    displayMonitor.appendChild(line);
+                }, index * 40);
+            });
+        }
+
         // Module 05 Engine: Asynchronous output stream generator simulating thread scheduling states
         function executeSimulation(mode) {
             const monitor = document.getElementById('monitor-buffer');
             const btnChaos = document.getElementById('btn-chaos');
             const btnSynced = document.getElementById('btn-synced');
 
-            // Reset UI Control button indicators
             btnChaos.classList.remove('active-chaos');
             btnSynced.classList.remove('active-synced');
 
-            // Purge condition branch
             if (mode === 'purge') {
                 monitor.innerHTML = '<div class="log-line info-text">[SYSTEM_LOG] Output buffer arrays purged. Operational channels clear.</div>';
                 return;
             }
 
-            // Assign structural telemetry configurations depending on parameter target
             let lines = [];
             if (mode === 'chaos') {
                 btnChaos.classList.add('active-chaos');
@@ -663,7 +768,6 @@
                 ];
             }
 
-            // Execute automated streaming sequence into DOM node
             monitor.innerHTML = '';
             lines.forEach((lineData, index) => {
                 setTimeout(() => {
@@ -674,12 +778,10 @@
                     else if (lineData.type === 'sec') lineDiv.classList.add('sec-text');
                     else if (lineData.type === 'info') lineDiv.classList.add('info-text');
 
-                    // Security Context: Safe text assignment to defend against dynamic string parsing injections (XSS Mitigation)
                     lineDiv.textContent = lineData.text;
-                    
                     monitor.appendChild(lineDiv);
                     monitor.scrollTop = monitor.scrollHeight;
-                }, index * 200); // 200ms sequential animation staggering lag
+                }, index * 180);
             });
         }
     </script>
